@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import api from "../services/api";
+import { getSocket } from "../utils/socket";
 import MessageBubble from "./MessageBubble";
 
 export default function ChatWindow({ conversation, onSaved }) {
@@ -11,10 +11,38 @@ export default function ChatWindow({ conversation, onSaved }) {
   const bottomRef = useRef(null);
 
   useEffect(() => {
+    const socket = getSocket();
+
+    const onAI = ({ conversationId, message }) => {
+      setConvoId(conversationId);
+      setMessages((prev) => [...prev, message]);
+      setLoading(false);
+      onSaved(conversationId);
+    };
+    const onErr = (msg) => {
+      setError(msg);
+      setLoading(false);
+    };
+    const onConnectError = () => {
+      setError("Connection failed. Please log in again.");
+      setLoading(false);
+    };
+
+    socket.on("ai_message", onAI);
+    socket.on("chat_error", onErr);
+    socket.on("connect_error", onConnectError);
+    return () => {
+      socket.off("ai_message", onAI);
+      socket.off("chat_error", onErr);
+      socket.off("connect_error", onConnectError);
+    };
+  }, []);
+
+  useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  const send = async (e) => {
+  const send = (e) => {
     e.preventDefault();
     const text = input.trim();
     if (!text || loading) return;
@@ -23,20 +51,7 @@ export default function ChatWindow({ conversation, onSaved }) {
     setInput("");
     setLoading(true);
     setError("");
-
-    try {
-      const { data } = await api.post("/chat/message", {
-        conversationId: convoId,
-        content: text,
-      });
-      setConvoId(data.conversationId);
-      setMessages((prev) => [...prev, data.message]);
-      onSaved(data.conversationId);
-    } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    getSocket().emit("send_message", { conversationId: convoId, content: text });
   };
 
   return (
