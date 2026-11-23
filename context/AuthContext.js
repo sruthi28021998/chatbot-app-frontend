@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import api from "../services/api";
+import { closeSocket } from "../utils/socket";
 
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
@@ -37,10 +38,10 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
+    closeSocket();
     localStorage.removeItem("token");
     setUser(null);
   };
-
   return (
     <AuthContext.Provider value={{ user, setUser, loading, login, register, logout }}>
       {children}
