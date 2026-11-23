@@ -1,10 +1,14 @@
-import ChatWindow from "../components/ChatWindow";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import { useAuth } from "../context/AuthContext";
 
 export default function Home() {
-  return (
-    <div className="h-screen flex flex-col max-w-3xl mx-auto">
-      <header className="p-4 border-b dark:border-gray-700 font-bold">AI Chatbot</header>
-      <ChatWindow />
-    </div>
-  );
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading) router.replace(user ? "/chat" : "/login");
+  }, [loading, user, router]);
+
+  return null;
 }

@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import api from "../services/api";
 import MessageBubble from "./MessageBubble";
 
-export default function ChatWindow() {
-  const [messages, setMessages] = useState([]);
-  const [convoId, setConvoId] = useState(null);
+export default function ChatWindow({ conversation, onSaved }) {
+  const [messages, setMessages] = useState(conversation?.messages || []);
+  const [convoId, setConvoId] = useState(conversation?._id || null);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -31,6 +31,7 @@ export default function ChatWindow() {
       });
       setConvoId(data.conversationId);
       setMessages((prev) => [...prev, data.message]);
+      onSaved(data.conversationId);
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong. Please try again.");
     } finally {
