@@ -43,6 +43,7 @@ export default function Chat() {
   };
 
   const removeChat = async (id) => {
+    if (!window.confirm("Delete this chat?")) return;
     await api.delete(`/chat/${id}`);
     if (activeId === id) newChat();
     loadList();
