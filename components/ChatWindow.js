@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import api from "../services/api";
 import { getSocket } from "../utils/socket";
 import MessageBubble from "./MessageBubble";
 
-export default function ChatWindow({ conversation, onSaved }) {
+export default function ChatWindow({ conversation, botName, onSaved }) {
   const [messages, setMessages] = useState(conversation?.messages || []);
   const [convoId, setConvoId] = useState(conversation?._id || null);
+  const [category, setCategory] = useState(conversation?.category || "casual");
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -51,22 +53,45 @@ export default function ChatWindow({ conversation, onSaved }) {
     setInput("");
     setLoading(true);
     setError("");
-    getSocket().emit("send_message", { conversationId: convoId, content: text });
+    getSocket().emit("send_message", { conversationId: convoId, content: text, category });
+  };
+
+  const rate = async (messageId, rating) => {
+    try {
+      await api.put(`/chat/${convoId}/rate`, { messageId, rating });
+      setMessages((prev) => prev.map((m) => (m._id === messageId ? { ...m, rating } : m)));
+    } catch (e) {
+      setError("Could not save rating.");
+    }
   };
 
   return (
     <div className="flex-1 flex flex-col min-h-0">
+      <div className="p-3 border-b dark:border-gray-700 flex items-center gap-2 text-sm">
+        <span>Style:</span>
+        <select
+          value={category}
+          disabled={!!convoId}
+          onChange={(e) => setCategory(e.target.value)}
+          className="border rounded p-1 dark:bg-gray-800 dark:border-gray-600 disabled:opacity-60"
+        >
+          <option value="casual">Casual</option>
+          <option value="professional">Professional</option>
+          <option value="creative">Creative</option>
+        </select>
+      </div>
+
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 && (
-          <p className="text-center text-gray-500 mt-20">Say hello 👋</p>
+          <p className="text-center text-gray-500 mt-20">Say hello to {botName} 👋</p>
         )}
         {messages.map((m, i) => (
-          <MessageBubble key={m._id || i} message={m} />
+          <MessageBubble key={m._id || i} message={m} botName={botName} onRate={rate} />
         ))}
         {loading && (
           <div className="flex justify-start">
             <div className="bg-white dark:bg-gray-800 shadow rounded-2xl px-4 py-2 text-gray-500 animate-pulse">
-              Thinking...
+              {botName} is typing...
             </div>
           </div>
         )}

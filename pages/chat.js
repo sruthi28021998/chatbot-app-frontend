@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import Sidebar from "../components/Sidebar";
 import ChatWindow from "../components/ChatWindow";
+import SettingsModal from "../components/SettingsModal";
 
 export default function Chat() {
   const { user, loading, logout } = useAuth();
@@ -12,6 +13,7 @@ export default function Chat() {
   const [active, setActive] = useState(null);
   const [activeId, setActiveId] = useState(null);
   const [chatKey, setChatKey] = useState(0);
+  const [showSettings, setShowSettings] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -71,14 +73,21 @@ export default function Chat() {
         onNew={newChat}
         onOpen={openChat}
         onDelete={removeChat}
+        onSettings={() => setShowSettings(true)}
         onLogout={handleLogout}
       />
       <main className="flex-1 flex flex-col min-w-0">
         <div className="md:hidden p-2 border-b dark:border-gray-700">
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700">☰</button>
         </div>
-        <ChatWindow key={chatKey} conversation={active} onSaved={handleSaved} />
+        <ChatWindow
+          key={chatKey}
+          conversation={active}
+          botName={user.settings.chatbotName}
+          onSaved={handleSaved}
+        />
       </main>
+      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
     </div>
   );
 }
