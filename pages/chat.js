@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import Sidebar from "../components/Sidebar";
 import ChatWindow from "../components/ChatWindow";
-import SettingsModal from "../components/SettingsModal";
+
+const SettingsModal = dynamic(() => import("../components/SettingsModal"), { ssr: false });
 
 export default function Chat() {
   const { user, loading, logout } = useAuth();
@@ -64,7 +66,13 @@ export default function Chat() {
   if (loading || !user) return <p className="p-6">Loading...</p>;
 
   return (
-    <div className="h-screen flex">
+    <div className="h-[100dvh] flex">
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          className="md:hidden fixed inset-0 z-10 bg-black/40"
+        />
+      )}
       <Sidebar
         open={sidebarOpen}
         conversations={conversations}
