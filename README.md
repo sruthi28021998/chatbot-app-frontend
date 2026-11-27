@@ -24,7 +24,7 @@ Built with Next.js, Tailwind CSS, Axios and Socket.io client.
 - [Professional style reply](screenshots/professional.png)
 - [Dark mode](screenshots/dark-mode.png)
 - [Settings](screenshots/settings.png)
-- [Admin dashboard](screenshots/admin.png)
+
 
 ## Tech stack
 Next.js, React, Tailwind CSS, Axios, Socket.io client
