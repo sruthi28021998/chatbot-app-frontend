@@ -18,23 +18,13 @@ Built with Next.js, Tailwind CSS, Axios and Socket.io client.
 
 ## Screenshots
 
-### Login
-[![Login](screenshots/login.png)](screenshots/login.png)
-
-### Sign up
-[![Sign up](screenshots/register.png)](screenshots/register.png)
-
-### Chat
-[![Chat](screenshots/chat.png)](screenshots/chat.png)
-
-### Professional style
-[![Professional style](screenshots/professional.png)](screenshots/professional.png)
-
-### Dark mode
-[![Dark mode](screenshots/dark-mode.png)](screenshots/dark-mode.png)
-
-### Settings
-[![Settings](screenshots/settings.png)](screenshots/settings.png)
+- [Login page](screenshots/login.png)
+- [Sign up page](screenshots/register.png)
+- [Chat page](screenshots/chat.png)
+- [Professional style reply](screenshots/professional.png)
+- [Dark mode](screenshots/dark-mode.png)
+- [Settings](screenshots/settings.png)
+- [Admin dashboard](screenshots/admin.png)
 
 ## Tech stack
 Next.js, React, Tailwind CSS, Axios, Socket.io client
